@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+}
+
+group 'uk.co.sjlt.singletest'
+version '1.0-SNAPSHOT'
+
+project.ext {
+    junitJupiterGroup                   = 'org.junit.jupiter'
+    junitJupiterVersion                 = '5.7.0'
+    junitJupiterPlatformLauncherVersion = '1.7.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    funcTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+configurations {
+    funcTestCompileOnly.extendsFrom compileOnly
+    funcTestImplementation.extendsFrom implementation
+    funcTestProvidedCompile.extendsFrom providedCompile
+    funcTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
+dependencies {
+    funcTestImplementation "$junitJupiterGroup:junit-jupiter:$junitJupiterVersion"
+    funcTestImplementation group: junitJupiterGroup, name: 'junit-jupiter-api',
+        version: junitJupiterVersion
+
+    funcTestRuntimeOnly group: junitJupiterGroup,
+        name: 'junit-jupiter-engine', version: junitJupiterVersion
+
+    funcTestImplementation project (':MainModule')
+}
+
+task functionalTest (type: Test) {
+    description = 'Run functional tests.'
+    group       = 'verification'
+
+    useJUnitPlatform ()
+    testClassesDirs = sourceSets.funcTest.output.classesDirs
+    classpath       = sourceSets.funcTest.runtimeClasspath
+    testLogging { events 'started', 'passed', 'skipped', 'failed' }
+    // Ensure functional tests always run
+    outputs.upToDateWhen { false }
+}
+

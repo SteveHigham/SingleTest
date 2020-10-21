@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+}
+
+group 'uk.co.sjlt.singletest'
+version '1.0-SNAPSHOT'
+
+project.ext {
+    junitJupiterGroup                   = 'org.junit.jupiter'
+    junitJupiterVersion                 = '5.7.0'
+    junitJupiterPlatformLauncherVersion = '1.7.0'
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation "$junitJupiterGroup:junit-jupiter:$junitJupiterVersion"
+    testImplementation group: junitJupiterGroup, name: 'junit-jupiter-api',
+        version: junitJupiterVersion
+
+    testRuntimeOnly group: junitJupiterGroup,
+        name: 'junit-jupiter-engine', version: junitJupiterVersion
+}
+
+test {
+    useJUnitPlatform ()
+}
+
+jar {
+    dependsOn 'test'
+}
